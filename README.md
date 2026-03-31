@@ -7,7 +7,8 @@ VibeCoder is an autonomous Staff-Level Software Engineer and Release Manager des
 ```text
 /src                 → Core application code (VibeCoder agent)
 /tests               → Unit, integration, and e2e tests
-/docs                → Comprehensive documentation (Summary, Roadmap, Architecture, Specs)
+/docs                → Comprehensive documentation (Summary, Roadmap, Docs)
+/docs/implementation_guide.md → How to build and extend the VibeCoder agent
 /docs/adr            → Architecture Decision Records
 /docker              → Dockerfiles and infrastructure helpers
 /scripts             → Automation and developer scripts
