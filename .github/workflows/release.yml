@@ -1,0 +1,48 @@
+name: VibeCoder CD Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/vibe_coder/version.py'
+
+jobs:
+  release:
+    name: GitHub Artifact Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Extract Version
+        id: get_version
+        run: |
+          VERSION=$(python -c "import src.vibe_coder.version as v; print(v.__version__)")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Release Artifact
+        run: |
+          mkdir dist
+          cp -r src tests docs docker scripts Makefile requirements.txt README.md CHANGELOG.md dist/
+          tar -czvf "vibe_coder-${{ env.VERSION }}.tar.gz" -C dist/ .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ env.VERSION }}"
+          name: "Release v${{ env.VERSION }}"
+          body: "Automated Release triggered by version bump."
+          draft: false
+          prerelease: false
+          files: "vibe_coder-${{ env.VERSION }}.tar.gz"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

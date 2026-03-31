@@ -38,7 +38,8 @@ jobs:
         run: |
           python -m compileall src/
 
-  test_and_coverage:
+  test_and_regression:
+    name: Tests and Regression Validation
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -50,17 +51,57 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-      - name: Run tests with coverage
+      - name: Run Pytest (Unit, Integration, E2E & Regression)
+        run: |
+          pytest tests/
+
+  coverage_validation:
+    runs-on: ubuntu-latest
+    needs: test_and_regression
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Run coverage
         run: |
           coverage run -m pytest tests/
+          coverage xml -o coverage.xml
           coverage report --fail-under=80
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
 
   version_validation:
     runs-on: ubuntu-latest
-    needs: test_and_coverage
+    needs: coverage_validation
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Validate Version Change
         run: |
-          # Placeholder for version change detection logic
-          echo "Version validated successfully."
+          git fetch origin main || true
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_REF="origin/main"
+          else
+            BASE_REF="HEAD~1"
+          fi
+          
+          if ! git rev-parse "$BASE_REF" >/dev/null 2>&1; then
+             echo "Cannot find base reference. Assuming first run."
+             exit 0
+          fi
+          
+          if ! git diff --name-only $BASE_REF HEAD | grep -q "src/vibe_coder/version.py"; then
+             echo "::error::Version unchanged! You must bump the version in src/vibe_coder/version.py for any changes."
+             exit 1
+          else
+             echo "Version validation passed."
+          fi
