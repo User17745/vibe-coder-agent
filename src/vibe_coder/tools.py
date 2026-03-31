@@ -35,14 +35,47 @@ def list_recursive(path: str = '.') -> List[str]:
             file_list.append(os.path.relpath(os.path.join(root, file), path))
     return file_list
 
-def run_shell_command(command: str) -> str:
+def run_shell_command(command: str, timeout: int = 30) -> str:
     """Runs a shell command and returns the output.
     
     Args:
         command: The command string to execute.
+        timeout: Timeout in seconds.
     """
     try:
-        result = subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
-        return result.stdout
+        result = subprocess.run(
+            command, 
+            shell=True, 
+            capture_output=True, 
+            text=True, 
+            check=True,
+            timeout=timeout
+        )
+        return result.stdout or "Success (No Output)"
     except subprocess.CalledProcessError as e:
         return f"Error: {e.stderr}"
+    except subprocess.TimeoutExpired:
+        return f"Error: Command timed out after {timeout} seconds"
+
+def search_files(pattern: str, path: str = '.') -> str:
+    """Searches for a regex pattern in files within a directory.
+    
+    Args:
+        pattern: The regex pattern to search for.
+        path: The directory to search in.
+    """
+    try:
+        # Use grep -r to find matches
+        result = subprocess.run(
+            f"grep -rnE '{pattern}' {path} --exclude-dir=.git",
+            shell=True,
+            capture_output=True,
+            text=True
+        )
+        return result.stdout or "No matches found."
+    except Exception as e:
+        return f"Error during search: {str(e)}"
+
+def get_git_status() -> str:
+    """Returns the current git status of the repository."""
+    return run_shell_command("git status")

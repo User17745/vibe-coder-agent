@@ -27,22 +27,23 @@ jobs:
         id: get_version
         run: |
           VERSION=$(python -c "import src.vibe_coder.version as v; print(v.__version__)")
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Create Release Artifact
         run: |
           mkdir dist
           cp -r src tests docs docker scripts Makefile requirements.txt README.md CHANGELOG.md dist/
-          tar -czvf "vibe_coder-${{ env.VERSION }}.tar.gz" -C dist/ .
+          tar -czvf "vibe_coder-$VERSION.tar.gz" -C dist/ .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v${{ env.VERSION }}"
-          name: "Release v${{ env.VERSION }}"
+          tag_name: "v${{ steps.get_version.outputs.VERSION }}"
+          name: "Release v${{ steps.get_version.outputs.VERSION }}"
           body: "Automated Release triggered by version bump."
           draft: false
           prerelease: false
-          files: "vibe_coder-${{ env.VERSION }}.tar.gz"
+          files: "vibe_coder-${{ steps.get_version.outputs.VERSION }}.tar.gz"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

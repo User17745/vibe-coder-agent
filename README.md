@@ -20,22 +20,34 @@ README.md            → This file
 - **Runtime:** Python 3.10+
 - **Installation:**
   ```bash
-  source .venv/bin/activate
-  pip install -r requirements.txt
+  make install
   ```
 - **Configuration:** Create a `.env` file with your `GOOGLE_API_KEY`.
+- **Git Hooks:** Initialize local validation hooks:
+  ```bash
+  make setup-hooks
+  ```
+
+## Development & Operations
+This project uses a `Makefile` for standard development tasks:
+- `make install`: Install dependencies.
+- `make test`: Run all tests (Unit, Integration, E2E, Regression).
+- `make lint`: Run code analysis (Ruff).
+- `make playground`: Launch the VibeCoder agent.
+- `make setup-hooks`: Configure pre-push git hooks.
 
 ## Testing
-Run all tests using pytest:
-```bash
-pytest tests/
-```
+Comprehensive testing is enforced:
+- **Unit Tests**: Logic verification.
+- **Integration Tests**: Core agent and tool belt verification.
+- **Regression Tests**: Historical bug tracking (see `BUZZ-ZAP.md`).
+- **Coverage**: Minimum 80% coverage required for all pushes.
 
 ## CI/CD
-All changes pushed to the `main` branch undergo a strict pipeline including linting, building, testing, and version validation.
+All changes pushed to the `main` branch undergo a strict pipeline including linting, building, testing, and version validation. Automated releases are triggered upon version bumps.
 
-## Deployment
-Deployed to **Cloud Run** or **Vertex AI Agent Engine** based on project context.
+## Maintenance & Bugs
+Track all historical and active issues in [docs/BUZZ-ZAP.md](file:///Users/abhishekaggarwal/Projects/Experiments/coding_buddy/docs/BUZZ-ZAP.md).
 
 ## Demo
 Please refer to [docs/demo.md](file:///Users/abhishekaggarwal/Projects/Experiments/coding_buddy/docs/demo.md) for instructions on how to run and verify the agent's capabilities.

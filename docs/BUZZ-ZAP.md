@@ -22,5 +22,5 @@
 - **Root Cause:** The environment lacks `uv` and the `agent-starter-pack` package.
 - **Fix:** Manually implemented the repository structure and agent logic following the ADK guidelines.
 - **Detection:** Check for existence of the required directories and files.
-- **Linked Test:** N/A (structural check)
+- **Linked Test:** [tests/regression/test_bz001_scaffolding.py](file:///Users/abhishekaggarwal/Projects/Experiments/coding_buddy/tests/regression/test_bz001_scaffolding.py)
 - **Status:** Resolved

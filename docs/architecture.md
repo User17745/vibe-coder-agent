@@ -14,10 +14,10 @@ graph TD
     User -- "Prompt" --> VibeCoder
     VibeCoder -- "Query" --> LLM
     LLM -- "Response" --> VibeCoder
-    VibeCoder -- "Read/Write" --> FileSystem
-    VibeCoder -- "Commit/Push" --> Git
-    VibeCoder -- "Build/Test" --> Docker
-    VibeCoder -- "Orchestrate" --> CI_CD
+    VibeCoder -- "FS Ops" --> FileSystem
+    VibeCoder -- "Git Status" --> Git
+    VibeCoder -- "SEMVER" --> Git
+    VibeCoder -- "Shell Cmd" --> CI_CD
 ```
 
 ## Data Flow Diagram
