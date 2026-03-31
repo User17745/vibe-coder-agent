@@ -1,0 +1,7 @@
+google-adk
+pydantic
+typing-extensions
+pytest
+pytest-asyncio
+ruff
+coverage

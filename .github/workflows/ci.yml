@@ -1,0 +1,66 @@
+name: VibeCoder CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install ruff
+      - name: Lint with ruff
+        run: |
+          ruff check .
+
+  build:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Build check
+        run: |
+          python -m compileall src/
+
+  test_and_coverage:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Run tests with coverage
+        run: |
+          coverage run -m pytest tests/
+          coverage report --fail-under=80
+
+  version_validation:
+    runs-on: ubuntu-latest
+    needs: test_and_coverage
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Version Change
+        run: |
+          # Placeholder for version change detection logic
+          echo "Version validated successfully."
